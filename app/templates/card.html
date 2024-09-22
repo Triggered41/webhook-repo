@@ -1,0 +1,17 @@
+{% macro card(action, author, from_branch, to_branch, timestamp) %}
+
+{% if action=='push' %}
+<div class="card">
+    {{ author }} pushed to {{ to_branch }} on {{ timestamp }}
+</div>
+{% elif action=='pull_request' %}
+<div class="card">
+    {{ author }} submitted a pull request from {{ from_branch }} to {{ to_branch }} on {{ timestamp }}
+</div>
+{% elif action=='merge' %}
+<div class="card">
+    {{ author }} merged branch {{ from_branch }} to {{ to_branch }} on {{ timestamp }}
+</div>
+{% endif %}
+
+{% endmacro %}

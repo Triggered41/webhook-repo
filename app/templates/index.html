@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="../static/styles/style.css">
+</head>
+<body>
+    <h1>OK</h1>
+    {% from 'card.html' import card %}
+    {% for log in logs %}
+        <p class="date">{{ log[0].time }}</p>
+        <div class="list">
+            {% for entry in log %}
+            {{ card(entry.action ,'Triggered41', 'Dev', 'Main', 'time: '+ log[0].time|string) }}
+            {% endfor %}
+        </div>
+    {% endfor %}
+</body>
+</html>

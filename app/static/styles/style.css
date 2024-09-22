@@ -1,0 +1,26 @@
+/* body{
+    margin: 0;
+    padding: 0;
+} */
+
+.card{
+    padding: 1rem;
+    margin-inline: 2rem;
+    /* background-color: aqua; */
+    border: solid 1px skyblue;
+    margin-bottom: -1px;
+}
+
+.list div:first-child{
+    border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.list div:last-child{
+    border-bottom-left-radius: .5rem;
+    border-bottom-right-radius: .5rem;
+}
+
+
+.date{
+    margin-left: 2rem;
+}
