@@ -1,5 +1,5 @@
 from flask import Blueprint, json, request, render_template
-from DB.manager import insert_pull_req_action, insert_push_action
+from DB.manager import insert_pull_req_action, insert_push_action, fetch_actions
 
 webhook = Blueprint('Webhook', __name__)
 
@@ -12,7 +12,7 @@ def home():
 @webhook.route("/github", methods=["POST"] )
 def github_hook():
     data = request.json
-    event = data['X-GitHub-Event']
+    event = request.headers.get("X-Github-Event")
     #pr = data['pull_request']
     #insert_pull_req(data)
 
@@ -20,7 +20,7 @@ def github_hook():
     if (event == 'pull_request'):
         if (data['action'] == 'closed'):
             if data['pull_request']['merged']:
-                #merged
+                insert_pull_req_action(data, True)
                 pass
         else:
             datetime = data['pull_request']['created_at'].split('T')
@@ -38,7 +38,12 @@ def receiver():
 
 @webhook.route('/fetchActions')
 def getActions():
-    data = None
+    data = fetch_actions()
     return data
+
+@webhook.route("/a")
+def a():
+    logs_arr = [[{'action': 'merge', 'time': 1},{'time': 1, 'action': 'push'}]]
+    return render_template("index.html", logs=logs_arr, to_branch='Main', author="Triggered41", timestamp="123")
 
 

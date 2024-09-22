@@ -12,21 +12,24 @@ TIMESTAMP = "timestamp"
 MILLISECOND_START_INDEX = 20
 
 prefix = {1: 'st', 2: 'nd', 3: 'rd'}
-utc_datetime = datetime.datetime.now(datetime.UTC)
-utc_datetime = utc_datetime.strftime(r"%-d %B %Y - %I:%M %p UTC").split(' ')
-last_letter = int(utc_datetime[0][-1])
-if last_letter in prefix:
-    utc_datetime = ' '.join([utc_datetime[0] + prefix[last_letter]] + utc_datetime[1:])
 
-def insert_pull_req_action(data: dict):
+def get_time():
+    utc_datetime = datetime.datetime.now(datetime.UTC)
+    utc_datetime = utc_datetime.strftime(r"%-d %B %Y - %I:%M %p UTC").split(' ')
+    last_letter = int(utc_datetime[0][-1])
+    if last_letter in prefix:
+        utc_datetime = ' '.join([utc_datetime[0] + prefix[last_letter]] + utc_datetime[1:])
+    return utc_datetime
+
+def insert_pull_req_action(data: dict, merge=False):
     pr = data["pull_request"]
     col.insert_one({
         REQUEST_ID: pr["id"],
         AUTHOR: pr["user"]["login"],
-        ACTION: "PULL_REQUEST",
+        ACTION: "MERGE" if merge else "PULL_REQUEST",
         FROM_BRANCH: pr["head"]["ref"],
         TO_BRANCH: pr["base"]["ref"],
-        TIMESTAMP: pr["created_at"]
+        TIMESTAMP: datetime.datetime.now(datetime.UTC)
     })
 
 def insert_push_action(data):
@@ -36,5 +39,9 @@ def insert_push_action(data):
         ACTION: 'PUSH',
         FROM_BRANCH: data['base_ref'],
         TO_BRANCH: data['base_ref'],
-        TIMESTAMP: utc_datetime
+        TIMESTAMP: get_time(),
         })
+
+def fetch_actions():
+    actions = col.find({"timestamp": {"$gte": datetime.datetime.now(datetime.UTC)-datetime.timedelta(seconds=15)}})
+    return actions

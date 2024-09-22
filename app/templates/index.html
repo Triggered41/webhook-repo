@@ -7,6 +7,7 @@
     <link rel="stylesheet" type="text/css" href="../static/styles/style.css">
 </head>
 <body>
+
     <h1>OK</h1>
     {% from 'card.html' import card %}
     {% for log in logs %}
@@ -17,5 +18,13 @@
             {% endfor %}
         </div>
     {% endfor %}
+    <button onclick="ello();">Hello</button>
+
+    <script>
+        function ello(){
+            alert("cool")
+            fetch("/a")
+        }
+    </script>
 </body>
 </html>
