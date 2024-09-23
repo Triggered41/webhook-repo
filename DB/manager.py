@@ -9,17 +9,9 @@ FROM_BRANCH = "from_branch"
 TO_BRANCH = "to_branch"
 TIMESTAMP = "timestamp"
 
-MILLISECOND_START_INDEX = 20
+REFRESH_TIME = 15
 
 prefix = {1: 'st', 2: 'nd', 3: 'rd'}
-
-def get_time():
-    utc_datetime = datetime.datetime.now(datetime.UTC)
-    utc_datetime = utc_datetime.strftime(r"%-d %B %Y - %I:%M %p UTC").split(' ')
-    last_letter = int(utc_datetime[0][-1])
-    if last_letter in prefix:
-        utc_datetime = ' '.join([utc_datetime[0] + prefix[last_letter]] + utc_datetime[1:])
-    return utc_datetime
 
 def insert_pull_req_action(data: dict, merge=False):
     pr = data["pull_request"]
@@ -37,11 +29,17 @@ def insert_push_action(data):
         REQUEST_ID: data['after'],
         AUTHOR: data['pusher']['name'],
         ACTION: 'PUSH',
-        FROM_BRANCH: data['base_ref'],
-        TO_BRANCH: data['base_ref'],
-        TIMESTAMP: get_time(),
+        FROM_BRANCH: data['ref'].split('/')[-1],
+        TO_BRANCH: data['ref'].split('/')[-1],
+        TIMESTAMP: datetime.datetime.now(datetime.UTC),
         })
 
 def fetch_actions():
-    actions = col.find({"timestamp": {"$gte": datetime.datetime.now(datetime.UTC)-datetime.timedelta(seconds=15)}})
-    return actions
+    # Use below if required last 15 seconds actions
+    actions = col.find({"timestamp": {"$gte": datetime.datetime.now(datetime.UTC)-datetime.timedelta(seconds=REFRESH_TIME)}}).sort({"timestamp": -1})
+    arr = [ele for ele in actions]
+    for ele in arr:
+        ele['date'] = ele[TIMESTAMP].strftime(r"%b %d, %Y")
+        ele['time'] = ele[TIMESTAMP].strftime(r"%d %B %Y - %I:%M %p UTC").lstrip('0')
+    return arr
+

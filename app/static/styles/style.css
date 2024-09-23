@@ -24,3 +24,10 @@
 .date{
     margin-left: 2rem;
 }
+
+.refresh-timer{
+    font-weight: bold;
+    font-size: 2rem;
+    text-align: center;
+    color: skyblue;
+}

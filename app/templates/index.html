@@ -7,24 +7,36 @@
     <link rel="stylesheet" type="text/css" href="../static/styles/style.css">
 </head>
 <body>
-
-    <h1>OK</h1>
-    {% from 'card.html' import card %}
-    {% for log in logs %}
-        <p class="date">{{ log[0].time }}</p>
-        <div class="list">
-            {% for entry in log %}
-            {{ card(entry.action ,'Triggered41', 'Dev', 'Main', 'time: '+ log[0].time|string) }}
-            {% endfor %}
-        </div>
-    {% endfor %}
-    <button onclick="ello();">Hello</button>
+    <h1 class="refresh-timer"></h1>
+    <h1 class="refresh-timer">Actions</h1>
+    <div class="cards-list">
+        <!-- HOLDER for all cards -->
+    </div>
 
     <script>
-        function ello(){
-            alert("cool")
-            fetch("/a")
+        const REFRESH_TIME = 15 // in millisecond
+        const timer = document.querySelector('.refresh-timer')
+        const cardsHolder = document.querySelector('.cards-list')
+
+        var wait = 0
+
+        function updateCardsList(params) {
+            fetch("/webhook/fetchActions").then(val=>val.text()).then(val=>{
+                cardsHolder.innerHTML = val
+            })
+
         }
+        updateCardsList()
+        
+        setInterval(()=>{
+            timer.innerText = `Refresh in: ${15-wait}`
+            timer.classList.add('refresh-timer')
+            if (wait >= REFRESH_TIME){
+                updateCardsList()
+                wait = 0
+            }
+            wait += 1
+        }, 1000)
     </script>
 </body>
 </html>

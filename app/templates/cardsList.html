@@ -1,0 +1,9 @@
+{% from 'card.html' import card %}
+    {% for log in logs %}
+        <p class="date">{{ 'Actions on ' + log[0].date }}</p>
+        <div class="list">
+            {% for entry in log %}
+                {{ card(entry.action , entry.author, entry.from_branch, entry.to_branch, entry.time)}}
+            {% endfor %}
+        </div>
+    {% endfor %}
